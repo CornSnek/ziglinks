@@ -16,7 +16,7 @@ const keys_map = @import("keys_map.zig");
 const Keys = keys_map.Keys;
 const BooleanMap = keys_map.BooleanMap;
 const ini_reader = @import("ini_reader.zig");
-pub fn @"switch"(self: *Options, _: []const u8) !?u8 {
+pub fn install(self: *Options, _: []const u8) !?u8 {
     const stdout = std.io.getStdOut().writer();
     const stderr = std.io.getStdErr().writer();
     var parser: Parser = undefined;
@@ -61,7 +61,7 @@ pub fn @"switch"(self: *Options, _: []const u8) !?u8 {
         break;
     }
     if (_to_version == null) {
-        try stderr.print(ANSI("No versions specified for '--switch' (Use -choose or -version sub-options)" ++ endl, .{ 1, 31 }), .{});
+        try stderr.print(ANSI("No versions specified for '--install' (Use -choose or -version sub-options)" ++ endl, .{ 1, 31 }), .{});
         return 1;
     }
     const to_version: []const u8 = _to_version.?;
@@ -324,7 +324,7 @@ pub fn @"switch"(self: *Options, _: []const u8) !?u8 {
     if (uses_zls) try replace_symlink(self.allocator, symlinks_dir, to_version, zls_folder, zls_bin_path.?, zls_symlink_name, alt_zls_symlink);
     try stdout.print(ANSI("Please check if the symlinks are correctly pointing at the binary paths provided." ++ endl, .{ 1, 34 }), .{});
     edit_symlinks(.replace, self, symlinks_dir, to_version, zig_symlink_name, uses_zls, zls_symlink_name, alt_zig_symlink, alt_zls_symlink) catch |e| {
-        try stderr.writeAll(comptime ANSI("Corrupted '" ++ symlinks_ini ++ "'. If you are seeing this message, this might be an unintended bug. Try using the --clear_symlinks option and running the --switch option again.\n", .{ 1, 31 }));
+        try stderr.writeAll(comptime ANSI("Corrupted '" ++ symlinks_ini ++ "'. If you are seeing this message, this might be an unintended bug. Try using the --clear_symlinks option and running the --install option again.\n", .{ 1, 31 }));
         return e;
     };
     return 0;

@@ -25,7 +25,7 @@ pub const functions_as_public = [_][]const u8{
     "keys",
     "read_versions",
     "use_ini",
-    "switch",
+    "install",
     "clear_symlinks",
     "uninstall",
     "help",
@@ -56,7 +56,7 @@ pub fn help(_: *Options, _: []const u8) anyerror!?u8 {
         \\--usage: Prints the usage of the program.
         \\--read_versions: Prints the keys and values used for each version.
         \\  -filter: Prints only the versions that contains this string.
-        \\--switch: Downloads, unpacks, and adds symlinks to zig and zls binaires.
+        \\--install: Downloads, unpacks, and adds symlinks to zig and zls binaires.
         \\  -version: Type the version within the .ini file to install.
         \\  -choose: You have a prompt to choose which version to install using the .ini file.
         \\  -redownload: Deletes files in downloads folder to redownload files given in the .ini file.
@@ -65,7 +65,7 @@ pub fn help(_: *Options, _: []const u8) anyerror!?u8 {
         \\--uninstall: Removes a version's name/keys, and uninstalls the version in folders including symlinks.
         \\  -version: Type the version within the .ini file to install.
         \\  -choose: You have a prompt to choose which version to install using the .ini file.
-        \\--clear_symlinks: Removes all symlinks in the symlinks folder. Use --switch to add symlinks again.
+        \\--clear_symlinks: Removes all symlinks in the symlinks folder. Use --install to add symlinks again.
         \\
     , .{});
     return 0;
@@ -127,9 +127,9 @@ pub fn use_ini(self: *Options, _: []const u8) anyerror!?u8 {
     };
     return null;
 }
-pub const @"switch" = @import("Options_switch.zig").@"switch";
-const remove_all_in_dir = @import("Options_switch.zig").remove_all_in_dir;
-const edit_symlinks = @import("Options_switch.zig").edit_symlinks;
+pub const install = @import("Options_install.zig").install;
+const remove_all_in_dir = @import("Options_install.zig").remove_all_in_dir;
+const edit_symlinks = @import("Options_install.zig").edit_symlinks;
 pub fn clear_symlinks(_: *Options, _: []const u8) anyerror!?u8 {
     const stdout = std.io.getStdErr().writer();
     var symlinks_dir = try std.fs.cwd().openDir("symlinks", .{ .iterate = true });
@@ -159,7 +159,7 @@ pub fn uninstall(self: *Options, _: []const u8) anyerror!?u8 {
         break;
     }
     if (_to_version == null) {
-        try stderr.print(ANSI("No versions specified for '--switch' (Use -choose or -version sub-options)" ++ endl, .{ 1, 31 }), .{});
+        try stderr.print(ANSI("No versions specified for '--install' (Use -choose or -version sub-options)" ++ endl, .{ 1, 31 }), .{});
         return 1;
     }
     for (_to_version.?) |c| {
@@ -196,7 +196,7 @@ pub fn uninstall(self: *Options, _: []const u8) anyerror!?u8 {
     var symlinks_dir = try std.fs.cwd().openDir("symlinks", .{ .iterate = true });
     defer symlinks_dir.close();
     edit_symlinks(.remove, self, symlinks_dir, to_version, zig_symlink_name, uses_zls, zls_symlink_name, alt_zig_symlink, alt_zls_symlink) catch |e| {
-        try stderr.writeAll(comptime ANSI("Corrupted '" ++ symlinks_ini ++ "'. If you are seeing this message, this might be an unintended bug. Try using the --clear_symlinks option and running the --switch option again.\n", .{ 1, 31 }));
+        try stderr.writeAll(comptime ANSI("Corrupted '" ++ symlinks_ini ++ "'. If you are seeing this message, this might be an unintended bug. Try using the --clear_symlinks option and running the --install option again.\n", .{ 1, 31 }));
         return e;
     };
     symlinks_dir.deleteFile(zig_symlink_name) catch {};
@@ -224,7 +224,7 @@ pub fn requires_dash(_: *Options, name: []const u8) !?u8 {
 }
 pub fn choose_version(allocator: std.mem.Allocator, parser: ini_parser.Parser, ov: OptionsVariables) !?[]const u8 {
     const stdout = std.io.getStdOut().writer();
-    try stdout.print(ANSI("Used '-choose' sub-option. Please choose the version to switch." ++ endl, .{ 1, 34 }), .{});
+    try stdout.print(ANSI("Used '-choose' sub-option. Please choose the version to use." ++ endl, .{ 1, 34 }), .{});
     var versions_strs = try allocator.alloc([]const u8, 0);
     defer allocator.free(versions_strs);
     var parser_k_it = parser.ini_hm.keyIterator();
@@ -239,7 +239,7 @@ pub fn choose_version(allocator: std.mem.Allocator, parser: ini_parser.Parser, o
     }
     const stdin = std.io.getStdIn().reader();
     const at_index = while (true) {
-        try stdout.writeAll(comptime ANSI("Choose the version you want to switch to. Type the number:" ++ endl, .{1}));
+        try stdout.writeAll(comptime ANSI("Choose the version you want to use. Type the number:" ++ endl, .{1}));
         for (0..versions_strs.len) |i|
             try stdout.print(ANSI("{}) [{s}]" ++ endl, .{1}), .{ i, versions_strs[i] });
         const i_str = try stdin.readUntilDelimiterOrEofAlloc(allocator, '\n', 10) orelse continue;
