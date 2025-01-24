@@ -85,9 +85,9 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
         try stderr.print(ANSI("The version section name '{s}' doesn't exist in the {s} file." ++ endl, .{ 1, 31 }), .{ to_version, self.ov.ini_file });
         return 1;
     };
-    const requires_str = combined.get(Keys.Requires.str()).?;
-    if (!Keys.Requires.check()(requires_str)) {
-        try stderr.print(ANSI("The {s} value '{s}' is invalid. It should be a boolean value." ++ endl, .{ 1, 31 }), .{ Keys.Requires.str(), requires_str });
+    const requires_str = combined.get(Keys.RequiresDownload.str()).?;
+    if (!Keys.RequiresDownload.check()(requires_str)) {
+        try stderr.print(ANSI("The {s} value '{s}' is invalid. It should be a boolean value." ++ endl, .{ 1, 31 }), .{ Keys.RequiresDownload.str(), requires_str });
         return 1;
     }
     const chosen_os_type = combined.get(Keys.OSType.str()) orelse {
@@ -157,15 +157,15 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
     //Download zig/zls files
     if (is_downloadable) {
         if (zig_download == null) {
-            try stderr.print(ANSI("{s} must be set because {s} is set as true." ++ endl, .{ 1, 31 }), .{ Keys.ZigDownload.str(), Keys.Requires.str() });
+            try stderr.print(ANSI("{s} must be set because {s} is set as true." ++ endl, .{ 1, 31 }), .{ Keys.ZigDownload.str(), Keys.RequiresDownload.str() });
             return 1;
         }
         const dm = combined.get(Keys.DownloadManager.str()) orelse {
-            try stderr.print(ANSI("{s} must be set because {s} is set as true." ++ endl, .{ 1, 31 }), .{ Keys.DownloadManager.str(), Keys.Requires.str() });
+            try stderr.print(ANSI("{s} must be set because {s} is set as true." ++ endl, .{ 1, 31 }), .{ Keys.DownloadManager.str(), Keys.RequiresDownload.str() });
             return 1;
         };
         const dm_output_flag = combined.get(Keys.DownloadManagerOutputFlag.str()) orelse {
-            try stderr.print(ANSI("{s} must be set because {s} is set as true." ++ endl, .{ 1, 31 }), .{ Keys.DownloadManagerOutputFlag.str(), Keys.Requires.str() });
+            try stderr.print(ANSI("{s} must be set because {s} is set as true." ++ endl, .{ 1, 31 }), .{ Keys.DownloadManagerOutputFlag.str(), Keys.RequiresDownload.str() });
             return 1;
         };
         const dm_flags = combined.get(Keys.DownloadManagerFlags.str());
