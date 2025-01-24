@@ -20,7 +20,7 @@ When installing a version using `--install` , it downloads the package links pro
 To install a version, use `./ziglinks --install -version (version_name)`, or `./ziglinks --install -choice` to choose a section in the .ini file. Check `./ziglinks --help` for more options.
 
 ## PATH variable
-In order to use the symlink binaries for Zig and ZLS, you can edit the PATH variable for Windows/Linux/MacOS to the folder `/path/to/ziglinks/binary/symlinks/`.
+In order to use the symlink binaries for Zig and ZLS, you can edit the PATH variable for Windows/Linux/MacOS to the folder `/path/to/ziglinks/binary/symlinks/`. You can also set a path to `/path/to/ziglinks/binary/` so that the ziglinks executable is in the PATH as well.
 
 ## Symlink Info (Windows)
 You do not necessarily require administrator privileges in order to use symlinks. However, for Windows, it is a requirement. There is a prompt that will say the following, for example:
