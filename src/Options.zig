@@ -11,6 +11,7 @@ const ANSI = utilities.ANSI;
 const endl = utilities.endl;
 const os_tag = utilities.os_tag;
 const optional_str_eql = utilities.optional_str_eql;
+const allowed_as_filename = utilities.allowed_as_filename;
 const ArgsIterator = utilities.ArgsIterator;
 pub const OptionsVariables = struct {
     ini_file: []const u8 = "ziglinks.ini",
@@ -28,6 +29,7 @@ pub const functions_as_public = [_][]const u8{
     "install",
     "clear_symlinks",
     "uninstall",
+    "get_master",
     "help",
 };
 //pub fn functions are automatically placed in the options hashmap.
@@ -54,19 +56,25 @@ pub fn help(_: *Options, _: []const u8) anyerror!?u8 {
         \\
         \\Commands that exit the program after running:
         \\--usage: Prints the usage of the program.
+        \\
         \\--read_versions: Prints the keys and values used for each version.
         \\  -filter: Prints only the versions that contains this string.
+        \\
         \\--install: Downloads, unpacks, and adds symlinks to zig and zls binaires.
         \\  -version: Type the version within the .ini file to install.
         \\  -choose: You have a prompt to choose which version to install using the .ini file.
         \\  -redownload: Deletes files in downloads folder to redownload files given in the .ini file.
         \\  -reinstall-all/-reinstall-zig/-reinstall-zls: Deletes the files given in the versions folder.
+        \\
         \\--keys: Prints the valid keys used for the .ini file.
+        \\
         \\--uninstall: Removes a version's name/keys, and uninstalls the version in folders including symlinks.
         \\  -version: Type the version within the .ini file to install.
         \\  -choose: You have a prompt to choose which version to install using the .ini file.
+        \\
         \\--clear_symlinks: Removes all symlinks in the symlinks folder. Use --install to add symlinks again.
         \\
+        \\--get_master: Adds current version of a Zig master version to your .ini file by reading https://ziglang.org/download/index.json
     , .{});
     return 0;
 }
@@ -162,16 +170,11 @@ pub fn uninstall(self: *Options, _: []const u8) anyerror!?u8 {
         try stderr.print(ANSI("No versions specified for '--install' (Use -choose or -version sub-options)" ++ endl, .{ 1, 31 }), .{});
         return 1;
     }
-    for (_to_version.?) |c| {
-        switch (c) {
-            'a'...'z', 'A'...'Z', '0'...'9', '.', '-', '_', ' ' => {},
-            else => {
-                try stderr.print(ANSI("Invalid version name '{s}' to convert to folder. It should only contain characters from a-z, A-Z, 0-9, '-', '_', '.', and ' ' (space) only." ++ endl, .{ 1, 31 }), .{_to_version.?});
-                return 1;
-            },
-        }
-    }
     const to_version: []const u8 = _to_version.?;
+    if (!allowed_as_filename(to_version)) {
+        try stderr.print(ANSI("Invalid version name '{s}' to convert to folder. It should only contain characters from a-z, A-Z, 0-9, '-', '_', '.', '+', and ' ' (space) only." ++ endl, .{ 1, 31 }), .{to_version});
+        return 1;
+    }
     const combined = parser_ini.get_combined(to_version) catch {
         try stderr.print(ANSI("{s} is not a valid version in the .ini file." ++ endl, .{ 1, 31 }), .{to_version});
         return 1;
@@ -206,6 +209,7 @@ pub fn uninstall(self: *Options, _: []const u8) anyerror!?u8 {
     try stdout.print(ANSI("Version {s} uninstalled.\n", .{ 1, 33 }), .{to_version});
     return 0;
 }
+pub const get_master = @import("Options_get_master.zig").get_master;
 pub fn invalid(_: *Options, name: []const u8) !?u8 {
     const stderr = std.io.getStdErr().writer();
     try stderr.print(

@@ -12,6 +12,7 @@ const zig_bin = utilities.zig_bin;
 const zls_bin = utilities.zls_bin;
 const as_os_path = utilities.as_os_path;
 const symlinks_ini = utilities.symlinks_ini;
+const allowed_as_filename = utilities.allowed_as_filename;
 const keys_map = @import("keys_map.zig");
 const Keys = keys_map.Keys;
 const BooleanMap = keys_map.BooleanMap;
@@ -71,14 +72,9 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
             return 1;
         }
     }
-    for (to_version) |c| {
-        switch (c) {
-            'a'...'z', 'A'...'Z', '0'...'9', '.', '-', '_', ' ' => {},
-            else => {
-                try stderr.print(ANSI("Invalid version name '{s}' to convert to folder. It should only contain characters from a-z, A-Z, 0-9, '-', '_', '.', and ' ' (space) only." ++ endl, .{ 1, 31 }), .{to_version});
-                return 1;
-            },
-        }
+    if (!allowed_as_filename(to_version)) {
+        try stderr.print(ANSI("Invalid version name '{s}' to convert to folder. It should only contain characters from a-z, A-Z, 0-9, '-', '_', '.', '+', and ' ' (space) only." ++ endl, .{ 1, 31 }), .{to_version});
+        return 1;
     }
     try stdout.print(ANSI("Using version '{s}'" ++ endl, .{1}), .{to_version});
     const combined = parser.get_combined(to_version) catch {
@@ -318,7 +314,7 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
         }
     }
     //If zls_download is null, but uses_zls is true.
-    if (zls_bin_path == null) {
+    if (uses_zls and zls_bin_path == null) {
         try stderr.writeAll(comptime ANSI("Error: " ++ zls_bin ++ " cannot be found." ++ endl, .{ 1, 31 }));
         return 1;
     }
@@ -606,6 +602,7 @@ pub fn edit_symlinks(
     } else |e| return e;
     if (op == .replace) {
         //Add possible tokens to symlinks file
+        if (ini_save.tokens.getLast().value != .newline) try ini_save.tokens.append(self.allocator, .{ .alloc = false, .value = .newline });
         try ini_save.tokens.ensureUnusedCapacity(self.allocator, 14);
         ini_save.tokens.appendAssumeCapacity(.{
             .alloc = false,

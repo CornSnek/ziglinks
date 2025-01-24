@@ -1,5 +1,6 @@
 const std = @import("std");
 pub const os_tag = @import("builtin").os.tag;
+pub const arch = @import("builtin").cpu.arch;
 pub const endl: []const u8 = if (os_tag == .windows) "\r\n" else "\n";
 pub const sl: u8 = if (os_tag != .windows) '/' else '\\';
 pub const sl_str: []const u8 = if (os_tag != .windows) "/" else "\\";
@@ -62,4 +63,21 @@ pub fn as_os_path(comptime dirs: anytype, comptime path_type: PathType) []const 
         }
     }
     return return_str;
+}
+pub fn allowed_as_filename(str: []const u8) bool {
+    for (str) |c| {
+        switch (c) {
+            else => return false,
+            'a'...'z', 'A'...'Z', '0'...'9', '.', '+', '-', '_', ' ' => {},
+        }
+    }
+    return true;
+}
+pub fn os_to_program_str(os: std.Target.Os.Tag) ?[]const u8 {
+    return switch (os) {
+        .windows => "Windows",
+        .linux => "Linux",
+        .macos => "MacOS",
+        else => null,
+    };
 }

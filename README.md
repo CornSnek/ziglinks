@@ -19,6 +19,10 @@ When installing a version using `--install` , it downloads the package links pro
 
 To install a version, use `./ziglinks --install -version (version_name)`, or `./ziglinks --install -choice` to choose a section in the .ini file. Check `./ziglinks --help` for more options.
 
+## Master version
+You can add the current `master` Zig version using `./ziglinks --get_master`. It will add the information from https://ziglang.org/download/index.json to the `ziglinks.ini` file.
+Note: `master` versions require building the ZLS binary using the repository https://github.com/ziglang/zig
+
 ## PATH variable
 In order to use the symlink binaries for Zig and ZLS, you can edit the PATH variable for Windows/Linux/MacOS to the folder `/path/to/ziglinks/binary/symlinks/`. You can also set a path to `/path/to/ziglinks/binary/` so that the ziglinks executable is in the PATH as well.
 

@@ -336,7 +336,6 @@ test IniLexer {
             try std.testing.expect(std.mem.eql(u8, t.value.get_str(), token_value_arr[token_value_i].get_str()));
         } else break;
     } else |e| {
-        std.debug.print("Error: {any}\n", .{e});
         return e;
     }
     var arraylist: std.ArrayListUnmanaged(u8) = .{};
@@ -574,7 +573,6 @@ test IniLexerFile {
             try std.testing.expect(std.mem.eql(u8, t.value.get_str(), token_value_arr[token_value_i].get_str()));
         } else break;
     } else |e| {
-        std.debug.print("Error: {!}\n", .{e});
         return e;
     }
 }
