@@ -230,6 +230,17 @@ pub fn choose_version(allocator: std.mem.Allocator, parser: ini_parser.Parser, o
     var parser_k_it = parser.ini_hm.keyIterator();
     next_key: while (parser_k_it.next()) |k| {
         for (exclude_sections) |s| if (optional_str_eql(k.*, s)) continue :next_key;
+        const combined = try parser.get_combined(k.*.?);
+        const os_str = combined.get(Keys.OSType.str()) orelse continue;
+        switch (os_tag) {
+            .windows, .macos, .linux => |os| use_version: {
+                if (std.mem.eql(u8, os_str, "Windows") and os == .windows) break :use_version;
+                if (std.mem.eql(u8, os_str, "Linux") and os == .linux) break :use_version;
+                if (std.mem.eql(u8, os_str, "MacOS") and os == .macos) break :use_version;
+                continue;
+            },
+            else => continue,
+        }
         versions_strs = try allocator.realloc(versions_strs, versions_strs.len + 1);
         versions_strs[versions_strs.len - 1] = k.*.?;
     }
