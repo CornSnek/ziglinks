@@ -327,7 +327,7 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
     //To overwrite current zig/zls symlinks.
     try replace_symlink(self.allocator, symlinks_dir, to_version, zig_folder, zig_bin_path.?, zig_symlink_name, alt_zig_symlink);
     if (uses_zls) try replace_symlink(self.allocator, symlinks_dir, to_version, zls_folder, zls_bin_path.?, zls_symlink_name, alt_zls_symlink);
-    try stdout.print(ANSI("Please check if the symlinks are correctly pointing at the binary paths provided." ++ endl, .{ 1, 34 }), .{});
+    try stdout.print(ANSI("Please check if the symlinks are correctly pointing at the binary paths provided. To use the symlink binaries, append the '{s}" ++ sl_str ++ "versions' folder to an environment variable like PATH" ++ endl, .{ 1, 34 }), .{self.bin_path_str});
     edit_symlinks(.replace, self, symlinks_dir, to_version, zig_symlink_name, uses_zls, zls_symlink_name, alt_zig_symlink, alt_zls_symlink) catch |e| {
         try stderr.writeAll(comptime ANSI("Corrupted '" ++ symlinks_ini ++ "'. If you are seeing this message, this might be an unintended bug. Try using the --clear_symlinks option and running the --install option again.\n", .{ 1, 31 }));
         return e;

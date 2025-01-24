@@ -1,5 +1,5 @@
 # Ziglinks
-A Command-Line Interface (CLI) version manager for the [Zig programming language](https://github.com/ziglang/zig) and also supports managing [ZLS](https://github.com/zigtools/zls). This adds symlinks to different versions for each Zig/ZLS binary you provide.
+A Command-Line Interface (CLI) version manager for the [Zig programming language](https://github.com/ziglang/zig) and also supports managing [ZLS](https://github.com/zigtools/zls). This adds symlinks to different versions for each Zig/ZLS binary you provide. To build this, Zig version of 0.13.0 is recommended.
 
 ## Purpose
 I wanted to make a version manager for Zig.
