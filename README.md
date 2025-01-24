@@ -6,22 +6,24 @@ I wanted to make a version manager for Zig.
 
 One reason was due to the different versions that each Zig project would require. Some projects might use a development version such as the `master` versions in https://ziglang.org/download/. Some projects are very old and would require old versions such as `0.10.0`.
 
-Due to each of these different Zig versions, ZLS also requires specific versions for each Zig binary in order for ZLS to work. ZLS may also need to be manually built in order to work with `master` versions. I have made this program just to try to facilitate this and archive different versions.
+Due to each of these different Zig versions, ZLS also requires specific versions for each Zig binary in order for ZLS to work. ZLS may also need to be manually built in order to work with `master` versions.
+
+I have made this program just to try to facilitate and archive different versions for both Zig and ZLS binaries.
 
 ## Overview
 This version manager reads from a file called `ziglinks.ini`.
 
-You provide information such as download links, the folder name of the version you want to download (The folder name you provide is written in `[Each section]` in the `.ini` file). For more information of the different keys you can use, type the command `./ziglinks --keys`. You can also see the `ziglinks.ini` provided in this repository for examples.
+You provide information such as download links, the folder name of the version you want to download (The folder name you provide is written in `[Sections]` in the `.ini` file). For more information of the different keys you can use, type the command `./ziglinks --keys`. You can also see the `ziglinks.ini` provided in this repository for examples.
 
-When installing a version, it downloads the package links provided in the .ini file to the `downloads/` folder. It then extracts the zig/zls packages to the `versions/` folder. Finally, it adds symlinks to the zig/zls binaries you want to install in the `symlinks/` version.
+When installing a version using `--install` , it downloads the package links provided in the .ini file to the `downloads/` folder. It then extracts the zig/zls packages to the `versions/` folder. Finally, it adds symlinks to the zig/zls binaries you want to install in the `symlinks/` version. It will keep the package and files for every `--install` used so that you can change symlinks to different versions if needed.
 
-To install a version, use `./ziglinks --install -version (version_name)`, or `./ziglinks --install -choice` to choose a section in the .ini file.
+To install a version, use `./ziglinks --install -version (version_name)`, or `./ziglinks --install -choice` to choose a section in the .ini file. Check `./ziglinks --help` for more options.
 
 ## PATH variable
-In order to use the symlink binaries, you can try to edit the PATH variable for Windows/Linux/MacOS to the folder `/path/to/ziglinks/binary/symlinks/`.
+In order to use the symlink binaries for Zig and ZLS, you can edit the PATH variable for Windows/Linux/MacOS to the folder `/path/to/ziglinks/binary/symlinks/`.
 
 ## Symlink Info (Windows)
-You do not necessarily require administrator privileges in order to use the program. However, for Windows, it is a requirement. There is a prompt that will say the following, for example:
+You do not necessarily require administrator privileges in order to use symlinks. However, for Windows, it is a requirement. There is a prompt that will say the following, for example:
 
 ```ansi
 The program will try to run an elevated powershell command:
@@ -34,4 +36,8 @@ Please allow administrator priviliges to run the command above to create the sym
 Press enter to continue...
 ```
 
-This simply runs `new-item -ItemType SymbolicLink -Path ... -Target ...` in order to add symlinks to Windows.
+This simply runs `new-item -ItemType SymbolicLink -Path ... -Target ...` to add the symlinks to Windows and function properly.
+
+##TODO
+
+- Check if the program works properly in Linux.
