@@ -313,16 +313,12 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
             }
         }
     }
-    //If zls_download is null, but uses_zls is true.
-    if (uses_zls and zls_bin_path == null) {
-        try stderr.writeAll(comptime ANSI("Error: " ++ zls_bin ++ " cannot be found." ++ endl, .{ 1, 31 }));
-        return 1;
-    }
     const alt_zig_symlink = combined.get(Keys.AltZigSymlink.str());
     const alt_zls_symlink = combined.get(Keys.AltZlsSymlink.str());
     //To overwrite current zig/zls symlinks.
     try replace_symlink(self.allocator, symlinks_dir, to_version, zig_folder, zig_bin_path.?, zig_symlink_name, alt_zig_symlink);
-    if (uses_zls) try replace_symlink(self.allocator, symlinks_dir, to_version, zls_folder, zls_bin_path.?, zls_symlink_name, alt_zls_symlink);
+    //Adds zls symlink even if uses_zls is false.
+    if (zls_bin_path != null) try replace_symlink(self.allocator, symlinks_dir, to_version, zls_folder, zls_bin_path.?, zls_symlink_name, alt_zls_symlink);
     try stdout.print(ANSI("Please check if the symlinks are correctly pointing at the binary paths provided. To use the symlink binaries, append the '{[0]s}" ++ sl_str ++ "versions' and '{[0]s}' folders to an environment variable like PATH" ++ endl, .{ 1, 34 }), .{self.bin_path_str});
     edit_symlinks(.replace, self, symlinks_dir, to_version, zig_symlink_name, uses_zls, zls_symlink_name, alt_zig_symlink, alt_zls_symlink) catch |e| {
         try stderr.writeAll(comptime ANSI("Corrupted '" ++ symlinks_ini ++ "'. If you are seeing this message, this might be an unintended bug. Try using the --clear_symlinks option and running the --install option again.\n", .{ 1, 31 }));

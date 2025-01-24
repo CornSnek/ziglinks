@@ -122,7 +122,7 @@ pub const Keys = enum {
             .e = .UsesZls,
             .k = "uses_zls",
             .check = Check.in_true_false_map,
-            .description = "Adds symlink of the zls for this version if true. zls_download_link can be null when downloading zls manually. Default is false.",
+            .description = "zls_download_link is used. However, if false, you can still link the zls binary to the zig_folder_name folder. Default is false.",
             .default = "false",
         },
         .{
