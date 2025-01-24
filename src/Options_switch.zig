@@ -139,7 +139,7 @@ pub fn @"switch"(self: *Options, _: []const u8) !?u8 {
         symlinks_ini_create = try symlinks_dir.createFile(symlinks_ini, .{ .truncate = false });
         defer symlinks_ini_create.close();
         if (try symlinks_ini_create.getEndPos() == 0)
-            try symlinks_ini_create.writer().writeAll(";Internally used by zigswitch to keep track of symlinks from different versions when installing/uninstalling. Don't edit." ++ endl);
+            try symlinks_ini_create.writer().writeAll(";Internally used by ziglinks to keep track of symlinks from different versions when installing/uninstalling. Don't edit." ++ endl);
     }
     var global_downloads_dir = try std.fs.cwd().openDir("downloads", .{});
     defer global_downloads_dir.close();

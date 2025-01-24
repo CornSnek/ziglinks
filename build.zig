@@ -6,12 +6,12 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const exe = b.addExecutable(.{
-        .name = "zigswitch_v2",
+        .name = "ziglinks",
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
-    b.installBinFile("zigswitch.ini", "./zigswitch.ini");
+    b.installBinFile("ziglinks.ini", "./ziglinks.ini");
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);

@@ -30,7 +30,7 @@ pub fn main() !void {
     }
     var args_it = try utilities.ArgsIterator.init(allocator);
     defer args_it.deinit(allocator);
-    //This is used have the cwd "always point" inside the zigswitch binary with realpathAlloc.
+    //This is used to have the cwd "always point" inside the ziglinks binary with realpathAlloc.
     var bin_relative: []const u8 = args_it.next().?;
     while (switch (bin_relative[bin_relative.len - 1]) {
         '/', '\\', '.' => |c| if (c == '.') bin_relative.len != 1 else false,
@@ -56,11 +56,4 @@ pub fn main() !void {
         const options_fn = options_hashmap.get(str) orelse Options.invalid;
         if (try options_fn(&options, str)) |code| std.process.exit(code);
     }
-}
-
-test "simple test" {
-    var list = std.ArrayList(i32).init(std.testing.allocator);
-    defer list.deinit(); // try commenting this out and see if zig detects the memory leak!
-    try list.append(42);
-    try std.testing.expectEqual(@as(i32, 42), list.pop());
 }

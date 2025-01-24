@@ -13,7 +13,7 @@ const os_tag = utilities.os_tag;
 const optional_str_eql = utilities.optional_str_eql;
 const ArgsIterator = utilities.ArgsIterator;
 pub const OptionsVariables = struct {
-    ini_file: []const u8 = "zigswitch.ini",
+    ini_file: []const u8 = "ziglinks.ini",
 };
 allocator: std.mem.Allocator,
 bin_path_str: []const u8,
@@ -34,13 +34,13 @@ pub const functions_as_public = [_][]const u8{
 pub fn usage(self: *Options, _: []const u8) anyerror!?u8 {
     const stdout = std.io.getStdOut().writer();
     try stdout.print(
-        \\zigswitch usage:
+        \\ziglinks usage:
         \\This program creates and changes symbolic links for zig.exe (and optionally zls.exe)
         \\in order to change the Zig versions. Zig and ZLS Files are downloaded in the '{[bin_path_str]s}{[s]c}versions{[s]c}' folder.
         \\Append PATH variable with the following path '{[bin_path_str]s}{[s]c}symlinks{[s]c}'
         \\in order to use the symbolic links.
         \\
-        \\Type 'zigswitch -help' to see valid options.
+        \\Type 'ziglinks -help' to see valid options.
         \\
     , .{ .s = utilities.sl, .bin_path_str = self.bin_path_str });
     return 0;
@@ -50,7 +50,7 @@ pub fn help(_: *Options, _: []const u8) anyerror!?u8 {
     try stdout.print(
         \\Available options:
         \\Commands that do not exit the program after running
-        \\--use_ini: Reads the given .ini file. Default is zigswitch.ini
+        \\--use_ini: Reads the given .ini file. Default is ziglinks.ini
         \\
         \\Commands that exit the program after running:
         \\--usage: Prints the usage of the program.
@@ -209,7 +209,7 @@ pub fn uninstall(self: *Options, _: []const u8) anyerror!?u8 {
 pub fn invalid(_: *Options, name: []const u8) !?u8 {
     const stderr = std.io.getStdErr().writer();
     try stderr.print(
-        \\'{s}' is an invalid option. Type 'zigswitch --help' for valid options.
+        \\'{s}' is an invalid option. Type 'ziglinks --help' for valid options.
         \\
     , .{name});
     return 1;
