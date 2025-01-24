@@ -122,7 +122,7 @@ pub const Keys = enum {
             .e = .UsesZls,
             .k = "uses_zls",
             .check = Check.in_true_false_map,
-            .description = "Adds symlink of the zls for this version if true. Default is false.",
+            .description = "Adds symlink of the zls for this version if true. zls_download_link can be null when downloading zls manually. Default is false.",
             .default = "false",
         },
         .{

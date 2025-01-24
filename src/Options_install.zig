@@ -317,6 +317,11 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
             }
         }
     }
+    //If zls_download is null, but uses_zls is true.
+    if (zls_bin_path == null) {
+        try stderr.writeAll(comptime ANSI("Error: " ++ zls_bin ++ " cannot be found." ++ endl, .{ 1, 31 }));
+        return 1;
+    }
     const alt_zig_symlink = combined.get(Keys.AltZigSymlink.str());
     const alt_zls_symlink = combined.get(Keys.AltZlsSymlink.str());
     //To overwrite current zig/zls symlinks.
@@ -518,7 +523,7 @@ fn press_enter() !void {
 }
 ///Create/edit file that gets currently active (zig/zls)_symlink_name and alt_(zig/zls)_symlink_name
 pub fn edit_symlinks(
-    comptime op: enum { remove, replace },
+    op: enum { remove, replace },
     self: *Options,
     symlinks_dir: std.fs.Dir,
     to_version: []const u8,

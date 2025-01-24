@@ -42,7 +42,7 @@ pub const Parser = struct {
                         const value_t = try lexer.next(allocator) orelse unreachable;
                         errdefer value_t.deinit(allocator);
                         if (!keys_map.Keys.has(k))
-                            try stderr.print(ANSI("Parser: '{s}' is not used as a key. Please check --keys for the correct spelling." ++ endl, .{ 1, 33 }), .{k});
+                            try stderr.print(ANSI("Parser: '{s}' is not used as a key. Please check --keys for the correct spelling or valid keys." ++ endl, .{ 1, 33 }), .{k});
                         last_section_used = true;
                         const gop = try self.ini_hm.getOrPut(allocator, last_section_maybe);
                         var hm: *Parser.VersionsHashMap = gop.value_ptr;
