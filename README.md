@@ -4,14 +4,14 @@ A Command-Line Interface (CLI) version manager for the [Zig programming language
 ## Purpose
 I wanted to make a version manager for Zig.
 
-One reason was due to the different versions that each Zig project would require. Some projects might use a development version such as the `master` versions in https://ziglang.org/download/. Some projects are very old and would require old versions such as `0.10.0`.
+One reason was due to the different versions that each Zig project would require. Other projects might use a development version such as the `master` versions in https://ziglang.org/download/. Some projects are very old and would require old versions such as `0.10.0`.
 
-Due to each of these different Zig versions, ZLS also requires specific versions for each Zig binary in order for ZLS to work. ZLS may also need to be manually built in order to work with `master` versions.
+Also, due to each of these different Zig versions, ZLS also requires specific versions for each Zig binary in order for ZLS to work. ZLS may also need to be manually built in order to work with `master` versions.
 
-I have made this program just to try to facilitate and archive different versions for both Zig and ZLS binaries.
+I have made this program to archive different versions for both Zig and ZLS binaries with the reasons above.
 
 ## Overview
-This version manager reads from a file called `ziglinks.ini`.
+This version manager reads a file called `ziglinks.ini`.
 
 You provide information such as download links, the folder name of the version you want to download (The folder name you provide is written in `[Sections]` in the `.ini` file). For more information of the different keys you can use, type the command `./ziglinks --keys`. You can also see the `ziglinks.ini` provided in this repository for examples.
 
