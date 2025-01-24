@@ -38,6 +38,6 @@ Press enter to continue...
 
 This simply runs `new-item -ItemType SymbolicLink -Path ... -Target ...` to add the symlinks to Windows and function properly.
 
-##TODO
+## TODO
 
 - Check if the program works properly in Linux.
