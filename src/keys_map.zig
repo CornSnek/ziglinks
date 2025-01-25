@@ -45,7 +45,7 @@ pub const Keys = enum {
             .e = .RequiresDownload,
             .k = "requires_download",
             .check = Check.in_true_false_map,
-            .description = "zig_download_link and download_manager should be set if this is true. Otherwise, tries to find the path of zig and zls (if 'uses_zls' is enabled) in the versions/ folder.",
+            .description = "zig_download_link and download_manager should be set if this is true. Otherwise, tries to find the path of zig and zls in the versions/ folder.",
             .default = "false",
         },
         .{
