@@ -110,12 +110,12 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
     const zls_folder = combined.get(Keys.ZlsFolder.str()).?;
     const zig_symlink_name = combined.get(Keys.ZigSymlink.str()).?;
     const zls_symlink_name = combined.get(Keys.ZlsSymlink.str()).?;
-    const uses_zls_str = combined.get(Keys.UsesZls.str()).?;
-    if (!Keys.UsesZls.check()(uses_zls_str)) {
-        try stderr.print(ANSI("The {s} key '{s}' is invalid. It should be a boolean value." ++ endl, .{ 1, 31 }), .{ Keys.UsesZls.str(), uses_zls_str });
+    const uses_zls_download_str = combined.get(Keys.UsesZlsDownload.str()).?;
+    if (!Keys.UsesZlsDownload.check()(uses_zls_download_str)) {
+        try stderr.print(ANSI("The {s} key '{s}' is invalid. It should be a boolean value." ++ endl, .{ 1, 31 }), .{ Keys.UsesZlsDownload.str(), uses_zls_download_str });
         return 1;
     }
-    const uses_zls = BooleanMap.get(uses_zls_str).?;
+    const uses_zls_download = BooleanMap.get(uses_zls_download_str).?;
     const version_folder = try std.fmt.allocPrint(self.allocator, as_os_path(.{ "versions", "{s}" }, .dir), .{to_version});
     defer self.allocator.free(version_folder);
     //Create non-existent directories/files if not yet made.
@@ -212,7 +212,7 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
         if (exit_code != null) return exit_code;
         var zls_ext: Extension = .None;
         var zls_download_file_name: ?[]const u8 = null;
-        if (uses_zls and zls_download != null) {
+        if (uses_zls_download and zls_download != null) {
             var zls_flag_array: [][]const u8 = try self.allocator.dupe([]const u8, flag_array);
             defer self.allocator.free(zls_flag_array);
             zls_flag_array[1] = zls_download.?;
@@ -268,7 +268,7 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
             },
             .None => unreachable,
         }
-        if (uses_zls and zls_download != null) {
+        if (uses_zls_download and zls_download != null) {
             switch (zls_ext) {
                 .TarXz, .TarGz, .TarZst, .Zip => |ext| {
                     if (zls_bin_path != null and !reinstall_zls) {
@@ -321,10 +321,10 @@ pub fn install(self: *Options, _: []const u8) !?u8 {
         try stderr.writeAll(comptime ANSI("Error: " ++ zls_bin ++ " cannot be found in the versions folder." ++ endl, .{ 1, 31 }));
         return 1;
     }
-    //Adds zls symlink even if uses_zls is false.
+    //Adds zls symlink even if uses_zls_download is false.
     if (zls_bin_path != null) try replace_symlink(self.allocator, symlinks_dir, to_version, zls_folder, zls_bin_path.?, zls_symlink_name, alt_zls_symlink);
     try stdout.print(ANSI("Please check if the symlinks are correctly pointing at the binary paths provided. To use the symlink binaries, append the '{[0]s}" ++ sl_str ++ "versions' and '{[0]s}' folders to an environment variable like PATH" ++ endl, .{ 1, 34 }), .{self.bin_path_str});
-    edit_symlinks(.replace, self, symlinks_dir, to_version, zig_symlink_name, uses_zls, zls_symlink_name, alt_zig_symlink, alt_zls_symlink) catch |e| {
+    edit_symlinks(.replace, self, symlinks_dir, to_version, zig_symlink_name, uses_zls_download, zls_symlink_name, alt_zig_symlink, alt_zls_symlink) catch |e| {
         try stderr.writeAll(comptime ANSI("Corrupted '" ++ symlinks_ini ++ "'. If you are seeing this message, this might be an unintended bug. Try using the --clear_symlinks option and running the --install option again.\n", .{ 1, 31 }));
         return e;
     };
@@ -524,7 +524,7 @@ pub fn edit_symlinks(
     symlinks_dir: std.fs.Dir,
     to_version: []const u8,
     zig_symlink_name: []const u8,
-    uses_zls: bool,
+    uses_zls_download: bool,
     zls_symlink_name: []const u8,
     alt_zig_symlink: ?[]const u8,
     alt_zls_symlink: ?[]const u8,
@@ -559,7 +559,7 @@ pub fn edit_symlinks(
                                 continue;
                             }
                         }
-                        if (uses_zls and std.mem.eql(u8, k, Keys.ZlsSymlink.str())) {
+                        if (uses_zls_download and std.mem.eql(u8, k, Keys.ZlsSymlink.str())) {
                             if (std.mem.eql(u8, value_t.value.get_str(), zls_symlink_name)) {
                                 t.deinit(self.allocator);
                                 value_t.deinit(self.allocator);
@@ -575,7 +575,7 @@ pub fn edit_symlinks(
                                 continue;
                             }
                         }
-                        if (uses_zls and alt_zls_symlink != null and std.mem.eql(u8, k, Keys.AltZlsSymlink.str())) {
+                        if (uses_zls_download and alt_zls_symlink != null and std.mem.eql(u8, k, Keys.AltZlsSymlink.str())) {
                             if (std.mem.eql(u8, value_t.value.get_str(), alt_zls_symlink.?)) {
                                 t.deinit(self.allocator);
                                 value_t.deinit(self.allocator);
@@ -618,7 +618,7 @@ pub fn edit_symlinks(
             .value = .{ .value = .{ .str = zig_symlink_name } },
         });
         ini_save.tokens.appendAssumeCapacity(.{ .alloc = false, .value = .newline });
-        if (uses_zls) {
+        if (uses_zls_download) {
             ini_save.tokens.appendAssumeCapacity(.{
                 .alloc = false,
                 .value = .{ .key = Keys.ZlsSymlink.str() },
@@ -640,7 +640,7 @@ pub fn edit_symlinks(
             });
             ini_save.tokens.appendAssumeCapacity(.{ .alloc = false, .value = .newline });
         }
-        if (uses_zls and alt_zls_symlink != null) {
+        if (uses_zls_download and alt_zls_symlink != null) {
             ini_save.tokens.appendAssumeCapacity(.{
                 .alloc = false,
                 .value = .{ .key = Keys.AltZlsSymlink.str() },

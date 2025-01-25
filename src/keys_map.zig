@@ -30,7 +30,7 @@ pub const Keys = enum {
     ZlsSymlink,
     AltZigSymlink,
     AltZlsSymlink,
-    UsesZls,
+    UsesZlsDownload,
     OSType,
     const Count = std.meta.fields(Keys).len;
     pub const InfoStruct = struct {
@@ -119,8 +119,8 @@ pub const Keys = enum {
             .description = "Alternative Symlink name of the zls executable. Optional.",
         },
         .{
-            .e = .UsesZls,
-            .k = "uses_zls",
+            .e = .UsesZlsDownload,
+            .k = "uses_zls_download",
             .check = Check.in_true_false_map,
             .description = "zls_download_link is used. However, if false, you can still link the zls binary to the zig_folder_name folder. Default is false.",
             .default = "false",

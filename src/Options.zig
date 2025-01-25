@@ -179,12 +179,12 @@ pub fn uninstall(self: *Options, _: []const u8) anyerror!?u8 {
         try stderr.print(ANSI("{s} is not a valid version in the .ini file." ++ endl, .{ 1, 31 }), .{to_version});
         return 1;
     };
-    const uses_zls_str = combined.get(Keys.UsesZls.str()).?;
-    if (!Keys.UsesZls.check()(uses_zls_str)) {
-        try stderr.print(ANSI("The {s} key '{s}' is invalid. It should be a boolean value." ++ endl, .{ 1, 31 }), .{ Keys.UsesZls.str(), uses_zls_str });
+    const uses_zls_download_str = combined.get(Keys.UsesZlsDownload.str()).?;
+    if (!Keys.UsesZlsDownload.check()(uses_zls_download_str)) {
+        try stderr.print(ANSI("The {s} key '{s}' is invalid. It should be a boolean value." ++ endl, .{ 1, 31 }), .{ Keys.UsesZlsDownload.str(), uses_zls_download_str });
         return 1;
     }
-    const uses_zls = BooleanMap.get(uses_zls_str).?;
+    const uses_zls_download = BooleanMap.get(uses_zls_download_str).?;
     const zig_symlink_name = combined.get(Keys.ZigSymlink.str()).?;
     const zls_symlink_name = combined.get(Keys.ZlsSymlink.str()).?;
     const alt_zig_symlink = combined.get(Keys.AltZigSymlink.str());
@@ -198,7 +198,7 @@ pub fn uninstall(self: *Options, _: []const u8) anyerror!?u8 {
     //Remove references of this version's symlinks.
     var symlinks_dir = try std.fs.cwd().openDir("symlinks", .{ .iterate = true });
     defer symlinks_dir.close();
-    edit_symlinks(.remove, self, symlinks_dir, to_version, zig_symlink_name, uses_zls, zls_symlink_name, alt_zig_symlink, alt_zls_symlink) catch |e| {
+    edit_symlinks(.remove, self, symlinks_dir, to_version, zig_symlink_name, uses_zls_download, zls_symlink_name, alt_zig_symlink, alt_zls_symlink) catch |e| {
         try stderr.writeAll(comptime ANSI("Corrupted '" ++ symlinks_ini ++ "'. If you are seeing this message, this might be an unintended bug. Try using the --clear_symlinks option and running the --install option again.\n", .{ 1, 31 }));
         return e;
     };

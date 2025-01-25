@@ -111,7 +111,7 @@ pub fn get_master(self: *Options, _: []const u8) anyerror!?u8 {
             .{ .alloc = false, .value = .{ .key = Keys.OSType.str() } },
             .{ .alloc = false, .value = .{ .value = .{ .str = os_to_program_str(os_tag).? } } },
             .{ .alloc = false, .value = .newline },
-            .{ .alloc = false, .value = .{ .key = Keys.UsesZls.str() } },
+            .{ .alloc = false, .value = .{ .key = Keys.UsesZlsDownload.str() } },
             .{ .alloc = false, .value = .{ .value = .{ .str = "false" } } },
             .{ .alloc = false, .value = .{ .comment = "You have to manually build ZLS as there are no links for master versions" } },
             .{ .alloc = false, .value = .newline },
