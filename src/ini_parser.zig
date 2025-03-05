@@ -17,7 +17,7 @@ pub const Parser = struct {
             return utilities.optional_str_eql(K1, K2);
         }
     };
-    ini_hm: std.HashMapUnmanaged(?[]const u8, VersionsHashMap, Context, 80) = .{},
+    ini_hm: std.HashMapUnmanaged(?[]const u8, VersionsHashMap, Context, 80) = .empty,
     /// Get keys and values for each version section. Parser should initially be undefined before calling this.
     pub fn init(self: *Parser, allocator: std.mem.Allocator, ov: OptionsVariables) !void {
         const stderr = std.io.getStdErr().writer();

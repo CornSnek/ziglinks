@@ -15,7 +15,7 @@ pub const Token = struct {
         /// Helper function that only allocates strings that have `\`. It removes the first '\' but not the character after it.
         /// Example: `a\\b\cd` becomes `a\bcd`. `abcd` becomes null because there are no backslashes.
         pub fn repr(self: ValueStr, allocator: std.mem.Allocator) std.mem.Allocator.Error!?[]const u8 {
-            var list: std.ArrayListUnmanaged(u8) = .{};
+            var list: std.ArrayListUnmanaged(u8) = .empty;
             defer list.deinit(allocator);
             const EscapedReadState = enum { no_backslash, backslash_false, backslash_true };
             var read_state: EscapedReadState = .no_backslash;
@@ -338,7 +338,7 @@ test IniLexer {
     } else |e| {
         return e;
     }
-    var arraylist: std.ArrayListUnmanaged(u8) = .{};
+    var arraylist: std.ArrayListUnmanaged(u8) = .empty;
     defer arraylist.deinit(allocator);
     try std.testing.expectEqual(IniSave.VerifyStatus.ok, ini_save.save(arraylist.writer(allocator), .{}));
     const expected_output =
@@ -578,7 +578,7 @@ test IniLexerFile {
 }
 
 pub const IniSave = struct {
-    tokens: std.ArrayListUnmanaged(Token) = .{},
+    tokens: std.ArrayListUnmanaged(Token) = .empty,
     ///Statuses with usize outputs the token index where the error occured.
     pub const VerifyStatus = union(enum) {
         ok: void,
