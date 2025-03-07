@@ -45,7 +45,6 @@ pub fn main() !void {
         .args_it = &args_it,
         .ov = .{},
     };
-    std.debug.print("{s}\n", .{args_it.it_arr});
     if (args_it.peek() == null) {
         _ = try Options.usage(&options, args_it.it_arr[0]);
         std.process.exit(0);
