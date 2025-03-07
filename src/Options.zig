@@ -259,7 +259,7 @@ pub fn choose_version(allocator: std.mem.Allocator, parser: ini_parser.Parser, o
             try stdout.print(ANSI("{}) [{s}]" ++ endl, .{1}), .{ i, versions_strs[i] });
         const i_str = try stdin.readUntilDelimiterOrEofAlloc(allocator, '\n', 10) orelse continue;
         defer allocator.free(i_str);
-        const i = std.fmt.parseInt(usize, i_str[0 .. i_str.len - 1], 10) catch continue;
+        const i = std.fmt.parseInt(usize, i_str[0 .. i_str.len - (endl.len - 1)], 10) catch continue; //endl.len - 1 to remove stray /r in windows or nothing in linux.
         if (i > versions_strs.len) continue;
         break i;
     };

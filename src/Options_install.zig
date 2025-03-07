@@ -468,7 +468,6 @@ fn child_process_download_file(allocator: std.mem.Allocator, downloads_dir: std.
     return null;
 }
 fn replace_symlink(allocator: std.mem.Allocator, symlinks_dir: std.fs.Dir, to_version: []const u8, zig_folder: []const u8, zig_path: []const u8, zig_symlink: []const u8, alt_zig_symlink: ?[]const u8) !void {
-    const stdout = std.io.getStdOut().writer();
     symlinks_dir.deleteFile(zig_symlink) catch {};
     if (alt_zig_symlink) |azs| symlinks_dir.deleteFile(azs) catch {};
     const zig_binary_rel_path = try std.fmt.allocPrint(allocator, as_os_path(.{ "..", "versions", "{s}", "{s}", "{s}" }, .file), .{ to_version, zig_folder, zig_path });
@@ -476,17 +475,23 @@ fn replace_symlink(allocator: std.mem.Allocator, symlinks_dir: std.fs.Dir, to_ve
     if (os_tag == .windows) {
         try symlink_windows(allocator, symlinks_dir, zig_symlink, zig_binary_rel_path);
     } else {
-        symlinks_dir.symLink(zig_binary_rel_path, zig_symlink, .{}) catch {};
-        try stdout.print(ANSI("Symlink '{s}' has been created/overwritten to link at '{s}'." ++ endl, .{ 1, 32 }), .{ zig_symlink, zig_binary_rel_path });
+        try symlink_linux(symlinks_dir, zig_symlink, zig_binary_rel_path);
     }
     if (alt_zig_symlink) |zig_symlink2| {
         if (os_tag == .windows) {
             try symlink_windows(allocator, symlinks_dir, zig_symlink2, zig_binary_rel_path);
         } else {
-            symlinks_dir.symLink(zig_binary_rel_path, zig_symlink2, .{}) catch {};
-            try stdout.print(ANSI("Symlink '{s}' has been created/overwritten to link at '{s}'." ++ endl, .{ 1, 32 }), .{ zig_symlink2, zig_binary_rel_path });
+            try symlink_linux(symlinks_dir, zig_symlink2, zig_binary_rel_path);
         }
     }
+}
+fn symlink_linux(symlinks_dir: std.fs.Dir, symlink_name: []const u8, symlink_path: []const u8) !void {
+    const stdout = std.io.getStdOut().writer();
+    try symlinks_dir.symLink(symlink_path, symlink_name, .{});
+    const file = try symlinks_dir.openFile(symlink_name, .{});
+    defer file.close();
+    try file.chmod(0o755); //Add +x to symlink binary.
+    try stdout.print(ANSI("Symlink '{s}' has been created/overwritten to link at '{s}'." ++ endl, .{ 1, 32 }), .{ symlink_name, symlink_path });
 }
 /// Because fs.Dir.symLink() doesn't work in Windows.
 fn symlink_windows(allocator: std.mem.Allocator, symlinks_dir: std.fs.Dir, symlink_name: []const u8, symlink_path: []const u8) !void {
