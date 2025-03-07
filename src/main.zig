@@ -30,13 +30,10 @@ pub fn main() !void {
     }
     var args_it = try utilities.ArgsIterator.init(allocator);
     defer args_it.deinit(allocator);
-    //This is used to have the cwd "always point" inside the ziglinks binary with realpathAlloc.
-    var bin_relative: []const u8 = args_it.next().?;
-    while (switch (bin_relative[bin_relative.len - 1]) {
-        '/', '\\', '.' => |c| if (c == '.') bin_relative.len != 1 else false,
-        else => true,
-    }) : (bin_relative.len -= 1) {}
-    const bin_path_str: []const u8 = try std.fs.cwd().realpathAlloc(allocator, bin_relative);
+    //Remove any path of binary.
+    _ = args_it.next().?;
+    //This is used to have the cwd "always point" inside the ziglinks binary, even if the binary is called from a $PATH variable in linux.
+    const bin_path_str: []const u8 = try std.fs.selfExeDirPathAlloc(allocator);
     defer allocator.free(bin_path_str);
     var bin_path_dir = try std.fs.openDirAbsolute(bin_path_str, .{});
     defer bin_path_dir.close();
@@ -48,6 +45,7 @@ pub fn main() !void {
         .args_it = &args_it,
         .ov = .{},
     };
+    std.debug.print("{s}\n", .{args_it.it_arr});
     if (args_it.peek() == null) {
         _ = try Options.usage(&options, args_it.it_arr[0]);
         std.process.exit(0);
